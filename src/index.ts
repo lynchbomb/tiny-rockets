@@ -2,14 +2,16 @@ import { ICanvasMeta } from './interfaces/i-canvas-meta';
 import { ICoords } from './interfaces/i-coords';
 import { IRocketOptions } from './interfaces/i-rocket-options';
 import Rocket from './rocket';
-import { randomIntBetween, randomVectorBetween } from './utils';
+import { randomIntBetween } from './utils';
+import Vector from './vector';
 
 class TinyRockets {
-  public FPS_THROTTLE: null | number = 16;
+  public FPS_THROTTLE: null | number = 5;
+  public rocketsCount: number = 1;
   public rocketWidth: number = 3;
   public rocketHeight: number = 6;
+
   public rockets: Array<[Rocket]> | any = [];
-  public rocketsCount: number = 10;
   public $canvas = document.getElementById('canvas') as HTMLCanvasElement;
   public canvasContext = this.$canvas.getContext('2d') as CanvasRenderingContext2D;
   public canvasMeta: ICanvasMeta = {
@@ -43,7 +45,7 @@ class TinyRockets {
   public initRockets() {
     for (let i = 0; i < this.rocketsCount; i++) {
       this.rockets.push(new Rocket({
-        coords: { x: randomIntBetween(0, this.canvasMeta.canvasScalarWidth), y: this.canvasMeta.canvasScalarHeight },
+        val: { x: randomIntBetween(0, this.canvasMeta.canvasScalarWidth), y: this.canvasMeta.canvasScalarHeight },
         width: this.rocketWidth,
         height: this.rocketHeight
       }));
@@ -77,14 +79,14 @@ class TinyRockets {
   }
 
   public clearCanvasRocket(rocket: Rocket): boolean {
-    this.clearCanvas(rocket.prevCoords.x, rocket.prevCoords.y, rocket.width, rocket.height);
+    this.clearCanvas(rocket.prevCoords.val.x, rocket.prevCoords.val.y, rocket.width, rocket.height);
 
     return true;
   }
 
   public renderRocket(rocket: Rocket): Rocket {
     this.canvasContext.fillStyle = rocket.fillStyle;
-    this.canvasContext.fillRect(rocket.coords.x, rocket.coords.y, rocket.width, rocket.height);
+    this.canvasContext.fillRect(rocket.coords.val.x, rocket.coords.val.y, rocket.width, rocket.height);
 
     return rocket;
   }
