@@ -40,10 +40,16 @@ export default class Rocket implements IRocketOptions {
   }
 
   public gravity() {
-    this.vel.add(this.acc.val);
-    this.pos.add(this.vel.val);
-    this.acc.scalar(0);
+    // this.vel.add(this.acc.val);
+    // this.pos.add(this.vel.val);
+    // this.coords.add(this.vel.val);
+    // this.acc.scalar(0);
     this.vel.limit(this.maxVelocity);
+  
+    console.log('VELOCITY: ', this.vel.val);
+    // console.log('POSITION: ', this.pos.val);
+    // console.log('COORDS: ', this.coords.val);
+    // console.log('ACC: ', this.acc.val);
   }
 
   public set setFillStyle(fillStyle: string) {
@@ -60,11 +66,13 @@ export default class Rocket implements IRocketOptions {
 
   public blast() {
     this.setPrevCoords(this.coords.val);
-    this.coords.val.x += randomIntBetween(-10, 10);
-    this.coords.val.y += randomIntBetween(-10, 0);
+    // this.coords.val.x += randomIntBetween(-10, 10);
+    // this.coords.val.y += randomIntBetween(-1, 0);
 
+    this.coords.val.y += -1;
     // TODO
     // this.rotate(this.heading);
+    this.gravity();
   }
 
   public rotate(heading: number) {
@@ -76,6 +84,8 @@ export default class Rocket implements IRocketOptions {
   }
 
   private strCoordsSet() {
+    // TODO prob can get rid of this method
+    // dont think its used anywhere
     this.strCoords = JSON.stringify(this.coords);
   }
 };

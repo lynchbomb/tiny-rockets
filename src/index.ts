@@ -6,10 +6,10 @@ import { randomIntBetween } from './utils';
 import Vector from './vector';
 
 class TinyRockets {
-  public FPS_THROTTLE: null | number = 5;
+  public FPS_THROTTLE: null | number = 1;
   public rocketsCount: number = 1;
-  public rocketWidth: number = 3;
-  public rocketHeight: number = 6;
+  public rocketWidth: number = 2;
+  public rocketHeight: number = 3;
 
   public rockets: Array<[Rocket]> | any = [];
   public $canvas = document.getElementById('canvas') as HTMLCanvasElement;
