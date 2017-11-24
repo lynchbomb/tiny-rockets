@@ -18,6 +18,8 @@ export default class Rocket implements IRocketOptions {
 
   public heading: number;
   public maxVelocity: number;
+  public score: number;
+  public probability: number;
 
   constructor(options: IRocketOptions) {
     this.coords = new Vector();

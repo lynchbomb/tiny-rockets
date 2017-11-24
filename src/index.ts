@@ -1,5 +1,7 @@
+import Genetics from './genetics';
 import { ICanvasMeta } from './interfaces/i-canvas-meta';
 import { ICoords } from './interfaces/i-coords';
+import { IGeneticsItem } from './interfaces/i-genetics';
 import { IRocketOptions } from './interfaces/i-rocket-options';
 import Rocket from './rocket';
 import { randomIntBetween } from './utils';
@@ -25,9 +27,12 @@ class TinyRockets {
     canvasScalarWidth: 0
   };
 
+  public genetics: Genetics;
+
   constructor() {
     this.initCanvas();
     this.initRockets();
+    this.initGenetics(this.rockets);
     this.initRenderRockets();
     this.update();
   }
@@ -50,8 +55,10 @@ class TinyRockets {
         height: this.rocketHeight
       }));
     }
+  }
 
-    this.initRenderRockets();
+  public initGenetics(curGeneration: [IGeneticsItem]) {
+    this.genetics = new Genetics(curGeneration);
   }
 
   public initRenderRockets() {
