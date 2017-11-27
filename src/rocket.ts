@@ -71,14 +71,44 @@ export default class Rocket implements IRocketOptions {
     // this.coords.val.x += randomIntBetween(-10, 10);
     // this.coords.val.y += randomIntBetween(-1, 0);
 
-    this.coords.val.y += -1;
-    // TODO
     // this.rotate(this.heading);
+    this.coords.val.y += -1;
     this.gravity();
   }
 
-  public rotate(heading: number) {
-    // TODO
+  public rotate(heading: number, degrees: number, coords: ICoords, width: number): ICoords {
+    // TODO: more than likely will need to set the origin point
+    // from top-left to center-center
+    // !remember to not call the canvas rotate method
+    // instead draw the line at the new angle
+    // TODO: confirm that x2/y2 doesn't need height
+
+    degrees = this.getRadians(degrees);
+
+    let x2 = coords.x + width * Math.cos(degrees);
+    let y2 = coords.y + width * Math.sin(degrees);
+
+    // ctx.moveTo(x1, y1);
+    // ctx.lineTo(x2, y2);
+
+    return {
+      x: x2,
+      y: y2
+    };
+  }
+
+  private getHeadingDegrees(coords: ICoords): number {
+    let h = Math.atan2(coords.y, coords.x);
+
+    return this.getDegrees(h);
+  }
+
+  private getRadians(degrees: number): number {
+    return degrees * Math.PI / 180;
+  }
+
+  private getDegrees(radians: number): number {
+    return radians * 180 / Math.PI;
   }
 
   private setPrevCoords(coords: ICoords) {
