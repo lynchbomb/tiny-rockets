@@ -1,3 +1,4 @@
+import { ICanvasMeta } from './interfaces/i-canvas-meta';
 import { ICoords } from './interfaces/i-coords';
 import { IRocketOptions } from './interfaces/i-rocket-options';
 import { IVector } from './interfaces/i-vector';
@@ -12,7 +13,7 @@ export default class Rocket implements IRocketOptions {
   public coords: Vector;
   public prevCoords: Vector;
 
-  public vel: Vector;
+  public velocity: Vector;
   public pos: Vector;
   public acc: Vector;
 
@@ -30,7 +31,9 @@ export default class Rocket implements IRocketOptions {
     this.height = options.height || 1;
 
     this.maxVelocity = 4;
-    this.vel = new Vector();
+    this.velocity = new Vector();
+    this.velocity.val.x = 5;
+    this.velocity.val.y = 2;
     this.pos = new Vector();
     this.acc = new Vector();
 
@@ -39,19 +42,7 @@ export default class Rocket implements IRocketOptions {
 
   public applyForce(force: ICoords) {
     this.acc.add(force);
-  }
-
-  public gravity() {
-    // this.vel.add(this.acc.val);
-    // this.pos.add(this.vel.val);
-    // this.coords.add(this.vel.val);
-    // this.acc.scalar(0);
-    this.vel.limit(this.maxVelocity);
-  
-    console.log('VELOCITY: ', this.vel.val);
-    // console.log('POSITION: ', this.pos.val);
-    // console.log('COORDS: ', this.coords.val);
-    // console.log('ACC: ', this.acc.val);
+    return this;
   }
 
   public set setFillStyle(fillStyle: string) {
@@ -66,17 +57,66 @@ export default class Rocket implements IRocketOptions {
     return this.prevCoords;
   }
 
-  public blast() {
+  public blast(canvasContext: CanvasRenderingContext2D, canvasMeta: ICanvasMeta) {
+    canvasContext.save();
     this.setPrevCoords(this.coords.val);
     // this.coords.val.x += randomIntBetween(-10, 10);
     // this.coords.val.y += randomIntBetween(-1, 0);
 
-    // this.rotate(this.heading);
+    // canvasContext.translate(this.prevCoords.val.x, this.prevCoords.val.y);
+
+    this.coords.val.x += -1;
     this.coords.val.y += -1;
-    this.gravity();
+
+    // translate to the rocket [i]
+    // rotate the rocket [i]
+    // canvasContext.rotate(this.getHeadingRadians(this.coords.val));
+    // this.rotate(this.heading);
+    // this.gravity();
+    return this;
   }
 
-  public rotate(heading: number, degrees: number, coords: ICoords, width: number): ICoords {
+  // this is the function to draw at an angle
+  public drawRockets(ctx) {
+    var r = 20;
+    var degrees = 90;
+
+    rockets.forEach((rocket) => {
+      var {x,y,d} = rocket;
+
+      ctx.moveTo(x, y);
+      ctx.lineWidth = 3;
+      ctx.lineTo(x + r * Math.cos(Math.PI * d / 180.0), y + r * Math.sin(Math.PI * d / 180.0));
+      ctx.stroke();
+    });
+  }
+
+  public gravity() {
+    this.coords.val.x += this.velocity.val.x;
+    this.coords.val.y += this.velocity.val.y;
+    this.velocity.val.y *= .99;
+    this.velocity.val.y += .25;
+
+    // this.vel.add(this.acc.val);
+    // this.pos.add(this.vel.val);
+    // this.coords.add(this.vel.val);
+    // this.acc.scalar(0);
+    this.velocity.limit(this.maxVelocity);
+    // console.log('POSITION: ', this.pos.val);
+    // console.log('COORDS: ', this.coords.val);
+    // console.log('ACC: ', this.acc.val);
+    return this;
+  }
+
+  public pRotate(angle: number) {
+    let r = this.getRadians(angle);
+
+    // this._renderer.rotate(r);
+
+    return this;
+  }
+
+  public rotate(degrees: number, coords: ICoords, width: number, heading?: number): ICoords {
     // TODO: more than likely will need to set the origin point
     // from top-left to center-center
     // !remember to not call the canvas rotate method
@@ -103,6 +143,10 @@ export default class Rocket implements IRocketOptions {
     return this.getDegrees(h);
   }
 
+  private getHeadingRadians(coords: ICoords): number {
+    return Math.atan2(coords.y, coords.x);
+  }
+
   private getRadians(degrees: number): number {
     return degrees * Math.PI / 180;
   }
@@ -113,11 +157,13 @@ export default class Rocket implements IRocketOptions {
 
   private setPrevCoords(coords: ICoords) {
     this.prevCoords.val = coords;
+    return this;
   }
 
   private strCoordsSet() {
     // TODO prob can get rid of this method
     // dont think its used anywhere
     this.strCoords = JSON.stringify(this.coords);
+    return this;
   }
 };

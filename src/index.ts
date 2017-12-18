@@ -8,9 +8,10 @@ import { randomIntBetween } from './utils';
 import Vector from './vector';
 
 class TinyRockets {
-  public FPS_THROTTLE: null | number = 1;
-  public rocketsCount: number = 1;
-  public rocketWidth: number = 2;
+  public FPS_THROTTLE: null | number = 10;
+  public IS_PAUSED: boolean = false;
+  public rocketsCount: number = 5;
+  public rocketWidth: number = 1;
   public rocketHeight: number = 3;
 
   public rockets: Array<[Rocket]> | any = [];
@@ -57,8 +58,8 @@ class TinyRockets {
     }
   }
 
-  public initGenetics(curGeneration: [IGeneticsItem]) {
-    this.genetics = new Genetics(curGeneration);
+  public initGenetics(currentGeneration: [IGeneticsItem]) {
+    this.genetics = new Genetics(currentGeneration);
   }
 
   public initRenderRockets() {
@@ -75,26 +76,48 @@ class TinyRockets {
   *********************************************
   *********************************************/
 
-  public blastRockets() {
-    this.clearCanvas();
+  public update() {
+    if (this.IS_PAUSED) { return; }
 
-    for (let i = 0; i < this.rockets.length; i++) {
-      this.rockets[i].blast();
-      // this.clearCanvasRocket(this.rockets[i]);
-      this.renderRocket(this.rockets[i]);
+    this.blastRockets(this.canvasContext, this.canvasMeta);
+
+    if (this.FPS_THROTTLE) {
+      setTimeout(() => {
+        window.requestAnimationFrame(this.update.bind(this));
+      }, 1000 / this.FPS_THROTTLE);
+    }else {
+      window.requestAnimationFrame(this.update.bind(this));
     }
   }
 
-  public clearCanvasRocket(rocket: Rocket): boolean {
-    this.clearCanvas(rocket.prevCoords.val.x, rocket.prevCoords.val.y, rocket.width, rocket.height);
+  // TODO: test and confirm logic
+  public isOOB(rocket: Rocket) {
+    if (rocket.coords.val.y + rocket.velocity.val.y > this.canvasMeta.canvasHeight || rocket.coords.val.y + rocket.velocity.val.y < 0) {
+      // rocket.velocity.val.y = -rocket.velocity.val.y;
+      return true;
+    } else if (rocket.coords.val.x + rocket.velocity.val.x > this.canvasMeta.canvasWidth || rocket.coords.val.x + rocket.velocity.val.x < 0) {
+      // rocket.velocity.val.x = -rocket.velocity.val.x;
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-    return true;
+  public blastRockets(canvasContext: CanvasRenderingContext2D, canvasMeta: ICanvasMeta) {
+    this.clearCanvas();
+
+    for (let i = 0; i < this.rockets.length; i++) {
+      this.rockets[i].blast(this.canvasContext, this.canvasMeta);
+      // this.clearCanvasRocket(this.rockets[i]);
+      this.renderRocket(this.rockets[i]);
+    }
   }
 
   public renderRocket(rocket: Rocket): Rocket {
     this.canvasContext.fillStyle = rocket.fillStyle;
     this.canvasContext.fillRect(rocket.coords.val.x, rocket.coords.val.y, rocket.width, rocket.height);
 
+    this.canvasContext.restore();
     return rocket;
   }
 
@@ -104,15 +127,9 @@ class TinyRockets {
     return true;
   }
 
-  public update() {
-    // this.blastRockets();
+  public clearCanvasRocket(rocket: Rocket): boolean {
+    this.clearCanvas(rocket.prevCoords.val.x, rocket.prevCoords.val.y, rocket.width, rocket.height);
 
-    if (this.FPS_THROTTLE) {
-      setTimeout(() => {
-        window.requestAnimationFrame(this.update.bind(this));
-      }, 1000 / this.FPS_THROTTLE);
-    }else {
-      window.requestAnimationFrame(this.update.bind(this));
-    }
+    return true;
   }
 };
