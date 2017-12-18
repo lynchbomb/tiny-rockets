@@ -2,7 +2,15 @@ import { ICanvasMeta } from './interfaces/i-canvas-meta';
 import { ICoords } from './interfaces/i-coords';
 import { IRocketOptions } from './interfaces/i-rocket-options';
 import { IVector } from './interfaces/i-vector';
-import { createVectorR2, randomIntBetween } from './utils';
+import {
+  createVectorR2,
+  getDegrees,
+  getHeadingDegrees,
+  getHeadingRadians,
+  getRadians,
+  getUnitVectorR2,
+  randomIntBetween
+} from './utils';
 import Vector from './vector';
 
 export default class Rocket implements IRocketOptions {
@@ -58,7 +66,6 @@ export default class Rocket implements IRocketOptions {
   }
 
   public blast(canvasContext: CanvasRenderingContext2D, canvasMeta: ICanvasMeta) {
-    canvasContext.save();
     this.setPrevCoords(this.coords.val);
     // this.coords.val.x += randomIntBetween(-10, 10);
     // this.coords.val.y += randomIntBetween(-1, 0);
@@ -109,7 +116,7 @@ export default class Rocket implements IRocketOptions {
   }
 
   public pRotate(angle: number) {
-    let r = this.getRadians(angle);
+    let r = getRadians(angle);
 
     // this._renderer.rotate(r);
 
@@ -123,7 +130,7 @@ export default class Rocket implements IRocketOptions {
     // instead draw the line at the new angle
     // TODO: confirm that x2/y2 doesn't need height
 
-    degrees = this.getRadians(degrees);
+    degrees = getRadians(degrees);
 
     let x2 = coords.x + width * Math.cos(degrees);
     let y2 = coords.y + width * Math.sin(degrees);
@@ -135,24 +142,6 @@ export default class Rocket implements IRocketOptions {
       x: x2,
       y: y2
     };
-  }
-
-  private getHeadingDegrees(coords: ICoords): number {
-    let h = Math.atan2(coords.y, coords.x);
-
-    return this.getDegrees(h);
-  }
-
-  private getHeadingRadians(coords: ICoords): number {
-    return Math.atan2(coords.y, coords.x);
-  }
-
-  private getRadians(degrees: number): number {
-    return degrees * Math.PI / 180;
-  }
-
-  private getDegrees(radians: number): number {
-    return radians * 180 / Math.PI;
   }
 
   private setPrevCoords(coords: ICoords) {

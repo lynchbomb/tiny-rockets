@@ -117,7 +117,6 @@ class TinyRockets {
     this.canvasContext.fillStyle = rocket.fillStyle;
     this.canvasContext.fillRect(rocket.coords.val.x, rocket.coords.val.y, rocket.width, rocket.height);
 
-    this.canvasContext.restore();
     return rocket;
   }
 

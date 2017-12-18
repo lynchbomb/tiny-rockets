@@ -1,3 +1,5 @@
+import { ICoords } from './interfaces/i-coords';
+
 export function generateMatrix(rows: number, columns: number, fillWith: any = undefined) {
   return new Array(rows).fill(fillWith).map(() => new Array(columns).fill(fillWith));
 }
@@ -31,4 +33,20 @@ export function getUnitVectorR2(vector: number[]): number {
 
 export function getRandomColor(): string {
   return '#' + Math.floor(Math.random() * (9999999 - 0o0)).toString(16);
+}
+
+export function getHeadingDegrees(coords: ICoords): number {
+  return Math.atan2(coords.y, coords.x) * 180 / Math.PI;
+}
+
+export function getHeadingRadians(coords: ICoords): number {
+  return Math.atan2(coords.y, coords.x);
+}
+
+export function getRadians(degrees: number): number {
+  return degrees * Math.PI / 180;
+}
+
+export function getDegrees(radians: number): number {
+  return radians * 180 / Math.PI;
 }
