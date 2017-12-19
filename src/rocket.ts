@@ -4,6 +4,7 @@ import { IRocketOptions } from './interfaces/i-rocket-options';
 import { IVector } from './interfaces/i-vector';
 import {
   createVectorR2,
+  generateRandomToken,
   getDegrees,
   getHeadingDegrees,
   getHeadingRadians,
@@ -20,6 +21,7 @@ export default class Rocket implements IRocketOptions {
   public strCoords: string = '';
   public coords: Vector;
   public prevCoords: Vector;
+  public id: string;
 
   public velocity: Vector;
   public pos: Vector;
@@ -33,7 +35,7 @@ export default class Rocket implements IRocketOptions {
   constructor(options: IRocketOptions) {
     this.coords = new Vector();
     this.coords.val = options.val ? options.val : this.coords.val;
-    this.prevCoords = new Vector({x: 0, y: 0});
+    this.prevCoords = new Vector({x: this.coords.val.x - 1, y: this.coords.val.y - 1});
     this.fillStyle = options.fillStyle || 'ff0000';
     this.width = options.width || 1;
     this.height = options.height || 1;
@@ -46,6 +48,7 @@ export default class Rocket implements IRocketOptions {
     this.acc = new Vector();
 
     this.strCoordsSet();
+    this.id = generateRandomToken();
   }
 
   public applyForce(force: ICoords) {
@@ -66,18 +69,15 @@ export default class Rocket implements IRocketOptions {
   }
 
   public blast(canvasContext: CanvasRenderingContext2D, canvasMeta: ICanvasMeta) {
-    this.setPrevCoords(this.coords.val);
     // this.coords.val.x += randomIntBetween(-10, 10);
     // this.coords.val.y += randomIntBetween(-1, 0);
 
-    // canvasContext.translate(this.prevCoords.val.x, this.prevCoords.val.y);
+    this.prevCoords.val.x = this.coords.val.x;
+    this.prevCoords.val.y = this.coords.val.y;
 
-    this.coords.val.x += -1;
-    this.coords.val.y += -1;
+    this.coords.val.x = this.coords.val.x - 1;
+    this.coords.val.y = this.coords.val.y - 1;
 
-    // translate to the rocket [i]
-    // rotate the rocket [i]
-    // canvasContext.rotate(this.getHeadingRadians(this.coords.val));
     // this.rotate(this.heading);
     // this.gravity();
     return this;
@@ -142,11 +142,6 @@ export default class Rocket implements IRocketOptions {
       x: x2,
       y: y2
     };
-  }
-
-  private setPrevCoords(coords: ICoords) {
-    this.prevCoords.val = coords;
-    return this;
   }
 
   private strCoordsSet() {

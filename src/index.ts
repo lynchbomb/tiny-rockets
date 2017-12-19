@@ -4,11 +4,11 @@ import { ICoords } from './interfaces/i-coords';
 import { IGeneticsItem } from './interfaces/i-genetics';
 import { IRocketOptions } from './interfaces/i-rocket-options';
 import Rocket from './rocket';
-import { randomIntBetween } from './utils';
+import { randomIntBetween, getDistanceBetweenR2Vectors } from './utils';
 import Vector from './vector';
 
 class TinyRockets {
-  public FPS_THROTTLE: null | number = 10;
+  public FPS_THROTTLE: null | number = null;
   public IS_PAUSED: boolean = false;
   public rocketsCount: number = 5;
   public rocketWidth: number = 1;
@@ -108,14 +108,19 @@ class TinyRockets {
 
     for (let i = 0; i < this.rockets.length; i++) {
       this.rockets[i].blast(this.canvasContext, this.canvasMeta);
-      // this.clearCanvasRocket(this.rockets[i]);
       this.renderRocket(this.rockets[i]);
     }
   }
 
   public renderRocket(rocket: Rocket): Rocket {
-    this.canvasContext.fillStyle = rocket.fillStyle;
-    this.canvasContext.fillRect(rocket.coords.val.x, rocket.coords.val.y, rocket.width, rocket.height);
+    let { x, y } = rocket.coords.val;
+
+    this.canvasContext.beginPath();
+    this.canvasContext.moveTo(rocket.prevCoords.val.x, rocket.prevCoords.val.y);
+    this.canvasContext.lineWidth = rocket.width;
+    this.canvasContext.lineTo(x, y);
+    this.canvasContext.stroke();
+    this.canvasContext.closePath();
 
     return rocket;
   }

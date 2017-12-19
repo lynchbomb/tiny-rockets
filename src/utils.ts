@@ -50,3 +50,16 @@ export function getRadians(degrees: number): number {
 export function getDegrees(radians: number): number {
   return radians * 180 / Math.PI;
 }
+
+export function generateRandomToken(): string {
+  return Math.floor(Math.random() * (9999999 - 0o0)).toString(16);
+}
+
+export function getDistanceBetweenR2Vectors(V1: ICoords, V2: ICoords) {
+  let _deltaV: ICoords = {
+    x: V1.x - V2.x,
+    y: V1.y - V2.y
+  };
+
+  return Math.sqrt(Math.pow(_deltaV.x, 2) + Math.pow(_deltaV.y, 2));
+}
