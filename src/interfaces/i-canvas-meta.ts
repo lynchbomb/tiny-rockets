@@ -7,4 +7,5 @@ export interface ICanvasMeta {
   canvasCenterY: number;
   canvasScalarHeight: number;
   canvasScalarWidth: number;
+  canvasPadding: number;
 };

@@ -1,18 +1,18 @@
 import Genetics from './genetics';
 import { ICanvasMeta } from './interfaces/i-canvas-meta';
-import { ICoords } from './interfaces/i-coords';
+import { IBoundary, ICoords } from './interfaces/i-coords';
 import { IGeneticsItem } from './interfaces/i-genetics';
 import { IRocketOptions } from './interfaces/i-rocket-options';
 import Rocket from './rocket';
-import { randomIntBetween, getDistanceBetweenR2Vectors } from './utils';
+import { getDistanceBetweenR2Vectors, getRadians, isOutOfBounds, randomIntBetween } from './utils';
 import Vector from './vector';
 
 class TinyRockets {
   public FPS_THROTTLE: null | number = null;
   public IS_PAUSED: boolean = false;
-  public rocketsCount: number = 5;
+  public rocketsCount: number = 1;
   public rocketWidth: number = 1;
-  public rocketHeight: number = 3;
+  public rocketHeight: number = 10;
 
   public rockets: Array<[Rocket]> | any = [];
   public $canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -25,9 +25,14 @@ class TinyRockets {
     canvasCenterX: 0,
     canvasCenterY: 0,
     canvasScalarHeight: 0,
-    canvasScalarWidth: 0
+    canvasScalarWidth: 0,
+    canvasPadding: (this.rocketHeight + this.rocketWidth) * 2
   };
-
+  public boundary: IBoundary = {
+    boundaryHeight: 0,
+    boundaryWidth: 0,
+    boundaryPadding: 0
+  };
   public genetics: Genetics;
 
   constructor() {
@@ -46,6 +51,9 @@ class TinyRockets {
     this.canvasMeta.canvasScalarHeight = (this.canvasMeta.canvasHeight / this.canvasMeta.canvasScaleHeight);
     this.canvasMeta.canvasScalarWidth = (this.canvasMeta.canvasWidth / this.canvasMeta.canvasScaleWidth);
     this.canvasContext.scale(this.canvasMeta.canvasScaleWidth, this.canvasMeta.canvasScaleHeight);
+    this.boundary.boundaryHeight = this.canvasMeta.canvasHeight;
+    this.boundary.boundaryWidth = this.canvasMeta.canvasWidth;
+    this.boundary.boundaryPadding = this.canvasMeta.canvasPadding;
   }
 
   public initRockets() {
@@ -90,19 +98,6 @@ class TinyRockets {
     }
   }
 
-  // TODO: test and confirm logic
-  public isOOB(rocket: Rocket) {
-    if (rocket.coords.val.y + rocket.velocity.val.y > this.canvasMeta.canvasHeight || rocket.coords.val.y + rocket.velocity.val.y < 0) {
-      // rocket.velocity.val.y = -rocket.velocity.val.y;
-      return true;
-    } else if (rocket.coords.val.x + rocket.velocity.val.x > this.canvasMeta.canvasWidth || rocket.coords.val.x + rocket.velocity.val.x < 0) {
-      // rocket.velocity.val.x = -rocket.velocity.val.x;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   public blastRockets(canvasContext: CanvasRenderingContext2D, canvasMeta: ICanvasMeta) {
     this.clearCanvas();
 
@@ -114,13 +109,31 @@ class TinyRockets {
 
   public renderRocket(rocket: Rocket): Rocket {
     let { x, y } = rocket.coords.val;
+    let degrees = rocket.degrees;
+    let width = rocket.width;
 
     this.canvasContext.beginPath();
     this.canvasContext.moveTo(rocket.prevCoords.val.x, rocket.prevCoords.val.y);
-    this.canvasContext.lineWidth = rocket.width;
+    this.canvasContext.lineWidth = width;
     this.canvasContext.lineTo(x, y);
+    // this.canvasContext.lineTo(x + width * Math.cos(getRadians(degrees)), y + width * Math.sin(getRadians(degrees)));
+
     this.canvasContext.stroke();
     this.canvasContext.closePath();
+
+    // let FROM_VECTOR = [ rocket.prevCoords.val.x, rocket.prevCoords.val.y ];
+    // let TO_VECTOR = [ x, y ];
+    // let ROCKET_ID = rocket.id;
+    // let DISTANCE_TRAVELED = getDistanceBetweenR2Vectors({x: rocket.prevCoords.val.x , y: rocket.prevCoords.val.y},{x: x, y: y});
+
+    if (isOutOfBounds(rocket.coords.val, this.boundary)) {
+      rocket.resetCoords({
+        x: randomIntBetween(0, this.canvasMeta.canvasScalarWidth),
+        y: this.canvasMeta.canvasScalarHeight
+      });
+    }
+
+    // debugger;
 
     return rocket;
   }

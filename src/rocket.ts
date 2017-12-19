@@ -27,6 +27,7 @@ export default class Rocket implements IRocketOptions {
   public pos: Vector;
   public acc: Vector;
 
+  public degrees: number;
   public heading: number;
   public maxVelocity: number;
   public score: number;
@@ -46,6 +47,7 @@ export default class Rocket implements IRocketOptions {
     this.velocity.val.y = 2;
     this.pos = new Vector();
     this.acc = new Vector();
+    this.degrees = 90;
 
     this.strCoordsSet();
     this.id = generateRandomToken();
@@ -69,14 +71,14 @@ export default class Rocket implements IRocketOptions {
   }
 
   public blast(canvasContext: CanvasRenderingContext2D, canvasMeta: ICanvasMeta) {
-    // this.coords.val.x += randomIntBetween(-10, 10);
-    // this.coords.val.y += randomIntBetween(-1, 0);
-
     this.prevCoords.val.x = this.coords.val.x;
     this.prevCoords.val.y = this.coords.val.y;
 
     this.coords.val.x = this.coords.val.x - 1;
     this.coords.val.y = this.coords.val.y - 1;
+
+    // this.coords.val.x += randomIntBetween(-10, 10);
+    // this.coords.val.y += randomIntBetween(-1, 0);
 
     // this.rotate(this.heading);
     // this.gravity();
@@ -84,18 +86,22 @@ export default class Rocket implements IRocketOptions {
   }
 
   // this is the function to draw at an angle
-  public drawRockets(ctx) {
-    var r = 20;
-    var degrees = 90;
+  // public drawRockets(ctx) {
+  //   var r = 20;
+  //   var degrees = 90;
 
-    rockets.forEach((rocket) => {
-      var {x,y,d} = rocket;
+  //   rockets.forEach((rocket) => {
+  //     var {x,y,d} = rocket;
 
-      ctx.moveTo(x, y);
-      ctx.lineWidth = 3;
-      ctx.lineTo(x + r * Math.cos(Math.PI * d / 180.0), y + r * Math.sin(Math.PI * d / 180.0));
-      ctx.stroke();
-    });
+  //     ctx.moveTo(x, y);
+  //     ctx.lineWidth = 3;
+  //     ctx.lineTo(x + r * Math.cos(Math.PI * d / 180.0), y + r * Math.sin(Math.PI * d / 180.0));
+  //     ctx.stroke();
+  //   });
+  // }
+
+  public resetCoords(coords: ICoords) {
+    this.coords.val = coords;
   }
 
   public gravity() {
@@ -115,25 +121,10 @@ export default class Rocket implements IRocketOptions {
     return this;
   }
 
-  public pRotate(angle: number) {
-    let r = getRadians(angle);
-
-    // this._renderer.rotate(r);
-
-    return this;
-  }
-
   public rotate(degrees: number, coords: ICoords, width: number, heading?: number): ICoords {
-    // TODO: more than likely will need to set the origin point
-    // from top-left to center-center
-    // !remember to not call the canvas rotate method
-    // instead draw the line at the new angle
-    // TODO: confirm that x2/y2 doesn't need height
-
-    degrees = getRadians(degrees);
-
-    let x2 = coords.x + width * Math.cos(degrees);
-    let y2 = coords.y + width * Math.sin(degrees);
+    let radians = getRadians(degrees);
+    let x2 = coords.x + width * Math.cos(radians);
+    let y2 = coords.y + width * Math.sin(radians);
 
     // ctx.moveTo(x1, y1);
     // ctx.lineTo(x2, y2);

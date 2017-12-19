@@ -9,4 +9,5 @@ export interface IRocketOptions {
   width?: number;
   height?: number;
   val?: ICoords;
+  degrees?: number;
 };
