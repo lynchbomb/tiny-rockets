@@ -10,11 +10,12 @@ import Vector from './vector';
 class TinyRockets {
   public FPS_THROTTLE: null | number = null;
   public IS_PAUSED: boolean = false;
-  public rocketsCount: number = 1;
-  public rocketWidth: number = 1;
-  public rocketHeight: number = 10;
-
+  public rocketsCount: number = 10;
+  public rocketWidth: number = 2;
+  public rocketHeight: number = 6;
   public rockets: Array<[Rocket]> | any = [];
+  public genetics: Genetics;
+
   public $canvas = document.getElementById('canvas') as HTMLCanvasElement;
   public canvasContext = this.$canvas.getContext('2d') as CanvasRenderingContext2D;
   public canvasMeta: ICanvasMeta = {
@@ -28,12 +29,12 @@ class TinyRockets {
     canvasScalarWidth: 0,
     canvasPadding: (this.rocketHeight + this.rocketWidth) * 2
   };
+
   public boundary: IBoundary = {
     boundaryHeight: 0,
     boundaryWidth: 0,
     boundaryPadding: 0
   };
-  public genetics: Genetics;
 
   constructor() {
     this.initCanvas();
@@ -111,12 +112,13 @@ class TinyRockets {
     let { x, y } = rocket.coords.val;
     let degrees = rocket.degrees;
     let width = rocket.width;
+    let height = rocket.height;
 
     this.canvasContext.beginPath();
     this.canvasContext.moveTo(rocket.prevCoords.val.x, rocket.prevCoords.val.y);
     this.canvasContext.lineWidth = width;
-    this.canvasContext.lineTo(x, y);
-    // this.canvasContext.lineTo(x + width * Math.cos(getRadians(degrees)), y + width * Math.sin(getRadians(degrees)));
+    // this.canvasContext.lineTo(x, y);
+    this.canvasContext.lineTo(x + height * Math.cos(getRadians(degrees)), y + height * Math.sin(getRadians(degrees)));
 
     this.canvasContext.stroke();
     this.canvasContext.closePath();
@@ -145,7 +147,7 @@ class TinyRockets {
   }
 
   public clearCanvasRocket(rocket: Rocket): boolean {
-    this.clearCanvas(rocket.prevCoords.val.x, rocket.prevCoords.val.y, rocket.width, rocket.height);
+    this.clearCanvas(rocket.coords.val.x, rocket.coords.val.y, rocket.width, rocket.height);
 
     return true;
   }

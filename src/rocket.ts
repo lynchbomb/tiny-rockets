@@ -70,15 +70,19 @@ export default class Rocket implements IRocketOptions {
     return this.prevCoords;
   }
 
+  // TODO
   public blast(canvasContext: CanvasRenderingContext2D, canvasMeta: ICanvasMeta) {
     this.prevCoords.val.x = this.coords.val.x;
     this.prevCoords.val.y = this.coords.val.y;
 
-    this.coords.val.x = this.coords.val.x - 1;
-    this.coords.val.y = this.coords.val.y - 1;
+    // this.coords.val.x = this.coords.val.x - 1;
+    // this.coords.val.y = this.coords.val.y - 1;
 
-    // this.coords.val.x += randomIntBetween(-10, 10);
-    // this.coords.val.y += randomIntBetween(-1, 0);
+    // this.coords.val.x = this.coords.val.x - 1;
+    // this.coords.val.y = this.coords.val.y - 1;
+
+    this.coords.val.x += randomIntBetween(-1, 1);
+    this.coords.val.y += randomIntBetween(-1, 0);
 
     // this.rotate(this.heading);
     // this.gravity();
@@ -100,6 +104,21 @@ export default class Rocket implements IRocketOptions {
   //   });
   // }
 
+  // TODO
+  // public rotate(degrees: number, coords: ICoords, width: number, heading?: number): ICoords {
+  //   let radians = getRadians(degrees);
+  //   let x2 = coords.x + width * Math.cos(radians);
+  //   let y2 = coords.y + width * Math.sin(radians);
+
+  //   // ctx.moveTo(x1, y1);
+  //   // ctx.lineTo(x2, y2);
+
+  //   return {
+  //     x: x2,
+  //     y: y2
+  //   };
+  // }
+
   public resetCoords(coords: ICoords) {
     this.coords.val = coords;
   }
@@ -119,20 +138,6 @@ export default class Rocket implements IRocketOptions {
     // console.log('COORDS: ', this.coords.val);
     // console.log('ACC: ', this.acc.val);
     return this;
-  }
-
-  public rotate(degrees: number, coords: ICoords, width: number, heading?: number): ICoords {
-    let radians = getRadians(degrees);
-    let x2 = coords.x + width * Math.cos(radians);
-    let y2 = coords.y + width * Math.sin(radians);
-
-    // ctx.moveTo(x1, y1);
-    // ctx.lineTo(x2, y2);
-
-    return {
-      x: x2,
-      y: y2
-    };
   }
 
   private strCoordsSet() {

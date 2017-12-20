@@ -44,11 +44,11 @@ export function getHeadingRadians(coords: ICoords): number {
 }
 
 export function getRadians(degrees: number): number {
-  return degrees * Math.PI / 180;
+  return degrees * (Math.PI / 180);
 }
 
 export function getDegrees(radians: number): number {
-  return radians * Math.PI / 180;
+  return radians * (180 / Math.PI);
 }
 
 export function generateRandomToken(): string {
@@ -68,23 +68,23 @@ export function isOutOfBounds(coords: ICoords, boundary: IBoundary ): boolean | 
   let { x, y } = coords;
   let { boundaryHeight, boundaryWidth, boundaryPadding } = boundary;
 
-  let isAbove = () => {
-    return (y < 0) ? 'isAbove' : false;
-  };
-  let isRight = () => {
-    return (x > boundaryWidth + boundaryPadding) ? 'isRight' : false;
-  };
-  let isBelow = () => {
-    return (y > boundaryHeight + boundaryPadding) ? 'isBelow' : false;
-  };
-  let isLeft = () => {
-    return (x < 0) ? 'isLeft' : false;
-  };
+  // let isAbove = () => {
+  //   return (y < 0) ? 'isAbove' : false;
+  // };
+  // let isRight = () => {
+  //   return (x > boundaryWidth + boundaryPadding) ? 'isRight' : false;
+  // };
+  // let isBelow = () => {
+  //   return (y > boundaryHeight + boundaryPadding) ? 'isBelow' : false;
+  // };
+  // let isLeft = () => {
+  //   return (x < 0) ? 'isLeft' : false;
+  // };
 
-  return isAbove() || isRight() || isBelow() || isLeft();
+  // return isAbove() || isRight() || isBelow() || isLeft();
 
   // above is for testing and below for performance
   // in relation to viewport
   // above, right, below, left
-  // return (y < 0) || (x > boundaryWidth + boundaryPadding) || (y > boundaryHeight + boundaryPadding) || (x < 0);
+  return (y < 0) || (x > boundaryWidth + boundaryPadding) || (y > boundaryHeight + boundaryPadding) || (x < 0);
 }
