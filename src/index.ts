@@ -8,12 +8,11 @@ import { getDistanceBetweenR2Vectors, getRadians, isOutOfBounds, randomIntBetwee
 import Vector from './vector';
 
 class TinyRockets {
-  public FPS_THROTTLE: null | number = null;
+  public FPS_THROTTLE: null | number = 5;
   public IS_PAUSED: boolean = false;
   public rocketsCount: number = 20;
   public rocketWidth: number = 1;
-  public rocketLength: number = 10;
-  public rocketHeight: number = 10;
+  public rocketHeight: number = 50;
   public rockets: Array<[Rocket]> | any = [];
   public genetics: Genetics;
 
@@ -22,8 +21,8 @@ class TinyRockets {
   public canvasMeta: ICanvasMeta = {
     canvasWidth: 0,
     canvasHeight: 0,
-    canvasScaleWidth: this.rocketWidth,
-    canvasScaleHeight: this.rocketHeight,
+    canvasScaleWidth: 1,
+    canvasScaleHeight: 1,
     canvasCenterX: 0,
     canvasCenterY: 0,
     canvasScalarHeight: 0,
@@ -52,7 +51,6 @@ class TinyRockets {
     this.canvasMeta.canvasCenterY = (this.canvasMeta.canvasHeight / this.canvasMeta.canvasScaleHeight) / 2;
     this.canvasMeta.canvasScalarHeight = (this.canvasMeta.canvasHeight / this.canvasMeta.canvasScaleHeight);
     this.canvasMeta.canvasScalarWidth = (this.canvasMeta.canvasWidth / this.canvasMeta.canvasScaleWidth);
-    this.canvasContext.scale(this.canvasMeta.canvasScaleWidth, this.canvasMeta.canvasScaleHeight);
     this.boundary.boundaryHeight = this.canvasMeta.canvasHeight;
     this.boundary.boundaryWidth = this.canvasMeta.canvasWidth;
     this.boundary.boundaryPadding = this.canvasMeta.canvasPadding;
@@ -61,7 +59,8 @@ class TinyRockets {
   public initRockets() {
     for (let i = 0; i < this.rocketsCount; i++) {
       this.rockets.push(new Rocket({
-        coords: new Vector({ x: randomIntBetween(0, this.canvasMeta.canvasScalarWidth), y: this.canvasMeta.canvasScalarHeight })
+        coords: new Vector({ x: randomIntBetween(0, this.canvasMeta.canvasScalarWidth), y: this.canvasMeta.canvasScalarHeight }),
+        height: this.rocketHeight
       }));
     }
   }
@@ -109,11 +108,9 @@ class TinyRockets {
 
   public renderRocket(rocket: Rocket): Rocket {
     let { x, y } = rocket.coords.val;
-    // let width = rocket.width;
 
     this.canvasContext.beginPath();
     this.canvasContext.moveTo(rocket.prevCoords.val.x, rocket.prevCoords.val.y);
-    // this.canvasContext.lineWidth = width;
     this.canvasContext.lineTo(x, y);
 
     this.canvasContext.stroke();

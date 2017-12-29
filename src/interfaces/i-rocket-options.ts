@@ -10,5 +10,4 @@ export default interface IRocketOptions {
   degrees?: number;
   maxVelocity?: number;
   mass?: number;
-  length?: number;
 };

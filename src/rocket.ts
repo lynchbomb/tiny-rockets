@@ -16,13 +16,8 @@ import Vector from './vector';
 
 export default class Rocket implements IRocketOptions {
   public fillStyle: string;
-  // defaults to 1
   public width: number;
-  // prob should remove this
-  // this should be the same as the delta
-  // between prev and current coords
   public height: number;
-  public length: number;
   public strCoords: string = '';
   public coords: Vector;
   public prevCoords: Vector;
@@ -43,28 +38,33 @@ export default class Rocket implements IRocketOptions {
   public probability: number;
   public radians: number;
 
+  public cosX: number;
+  public sinY: number;
+
   constructor(options: IRocketOptions) {
+    this.height = options.height || 5;
+    this.radians = randomIntBetween(0, Math.PI * 2);
+    this.cosX = Math.cos(this.radians) * this.height;
+    this.sinY = Math.sin(this.radians) * this.height;
+
     // TODO clean this up
     if (options.coords) {
       let _cx = options.coords.val.x;
       let _cy = options.coords.val.y;
-      this.coords = new Vector({x: _cx, y: _cy});
+      this.prevCoords = new Vector({x: _cx, y: _cy});
+      this.coords = new Vector({x: _cx + this.cosX, y: _cy + this.sinY});
     }else {
-      this.coords = new Vector();
+      this.prevCoords = new Vector({x: this.coords.val.x, y: this.coords.val.y});
+      this.coords = new Vector({x: this.prevCoords.val.x + this.cosX, y: this.prevCoords.val.y + this.sinY});
     }
-    this.prevCoords = new Vector({x: this.coords.val.x - 1, y: this.coords.val.y - 1});
     this.fillStyle = options.fillStyle || 'ff0000';
     this.width = options.width || 1;
-    this.height = options.height || 1;
     this.mass = options.mass || randomIntBetween(1, 1);
-    this.maxVelocity = options.maxVelocity || 1.1;
+    this.maxVelocity = options.maxVelocity || 1;
     this.velocity = new Vector();
     this.acceleration = new Vector();
-    this.acceleration.update({ x: 0.005, y: 0.005 });
-
+    this.acceleration.update({ x: 0.01, y: 0.01 });
     this.degrees = getDegrees(randomIntBetween(0, Math.PI * 2));
-    this.radians = randomIntBetween(0, Math.PI * 2);
-    // this.degrees = Math.atan2(this.coords.val.y, this.coords.val.x);
 
     // FORCES
     // essentially gravity is some gravitational constant * mass
@@ -118,6 +118,12 @@ export default class Rocket implements IRocketOptions {
 
     this.prevCoords.update(this.coords.val);
     this.applyKinetics();
+    // TODO: issue with mult velocity will gradually increase the
+    // height of the rocket over time until the maxVelocity ceil
+    this.prevCoords.add(this.velocity.val);
+
+    this.coords.val.x += (this.cosX * this.velocity.val.x);
+    this.coords.val.y += (this.sinY * this.velocity.val.y);
 
     // DIRECT
     // this.coords.val.x += this.velocity.val.x;
@@ -126,11 +132,6 @@ export default class Rocket implements IRocketOptions {
     // ANGLED
     // this.coords.val.x += (Math.cos(this.radians) * this.length) * this.velocity.val.x;
     // this.coords.val.y += (Math.sin(this.radians) * this.length) * this.velocity.val.y;
-    let cos = Math.cos(this.radians) * 10;
-    let sin = Math.sin(this.radians) * 10;
-
-    this.coords.val.x += cos;
-    this.coords.val.y += sin;
 
     // LEVERAGING HEADING BASED ON COORDS
     // this.coords.val.x += (Math.cos(getDegrees(this.coords.heading())) * this.velocity.val.x);
