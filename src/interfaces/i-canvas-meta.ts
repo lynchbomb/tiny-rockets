@@ -1,4 +1,4 @@
-export interface ICanvasMeta {
+export default interface ICanvasMeta {
   canvasWidth: number;
   canvasHeight: number;
   canvasScaleWidth: number;

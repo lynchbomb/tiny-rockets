@@ -1,5 +1,5 @@
 import { ICoords } from './i-coords';
 
-export interface IVector {
+export default interface IVector {
   val: ICoords;
 };

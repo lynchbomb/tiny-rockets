@@ -1,7 +1,7 @@
-import { ICanvasMeta } from './interfaces/i-canvas-meta';
+import ICanvasMeta from './interfaces/i-canvas-meta';
 import { ICoords } from './interfaces/i-coords';
-import { IRocketOptions } from './interfaces/i-rocket-options';
-import { IVector } from './interfaces/i-vector';
+import IRocketOptions from './interfaces/i-rocket-options';
+import IVector from './interfaces/i-vector';
 import {
   createVectorR2,
   generateRandomToken,
@@ -16,45 +16,135 @@ import Vector from './vector';
 
 export default class Rocket implements IRocketOptions {
   public fillStyle: string;
+  // defaults to 1
   public width: number;
+  // prob should remove this
+  // this should be the same as the delta
+  // between prev and current coords
   public height: number;
+  public length: number;
   public strCoords: string = '';
   public coords: Vector;
   public prevCoords: Vector;
   public id: string;
-
+  public mass: number;
   public velocity: Vector;
-  public pos: Vector;
-  public acc: Vector;
+  public maxVelocity: number;
+  public acceleration: Vector;
 
+  public friction: Vector;
+  public gravity: Vector;
+  public wind: Vector;
+
+  public forces: [Vector];
   public degrees: number;
   public heading: number;
-  public maxVelocity: number;
   public score: number;
   public probability: number;
+  public radians: number;
 
   constructor(options: IRocketOptions) {
-    this.coords = new Vector();
-    this.coords.val = options.val ? options.val : this.coords.val;
+    // TODO clean this up
+    if (options.coords) {
+      let _cx = options.coords.val.x;
+      let _cy = options.coords.val.y;
+      this.coords = new Vector({x: _cx, y: _cy});
+    }else {
+      this.coords = new Vector();
+    }
     this.prevCoords = new Vector({x: this.coords.val.x - 1, y: this.coords.val.y - 1});
     this.fillStyle = options.fillStyle || 'ff0000';
     this.width = options.width || 1;
     this.height = options.height || 1;
-
-    this.maxVelocity = 4;
+    this.mass = options.mass || randomIntBetween(1, 1);
+    this.maxVelocity = options.maxVelocity || 1.1;
     this.velocity = new Vector();
-    this.velocity.val.x = 5;
-    this.velocity.val.y = 2;
-    this.pos = new Vector();
-    this.acc = new Vector();
-    this.degrees = 90;
+    this.acceleration = new Vector();
+    this.acceleration.update({ x: 0.005, y: 0.005 });
+
+    this.degrees = getDegrees(randomIntBetween(0, Math.PI * 2));
+    this.radians = randomIntBetween(0, Math.PI * 2);
+    // this.degrees = Math.atan2(this.coords.val.y, this.coords.val.x);
+
+    // FORCES
+    // essentially gravity is some gravitational constant * mass
+    this.gravity = new Vector({x: 0, y: 0.3 * this.mass});
+    this.friction = new Vector({x: 0.1, y: 0});
+    this.wind = new Vector({x: 0.2, y: 0});
+    this.forces = [
+      this.gravity,
+      // this.friction,
+      // this.wind
+    ];
 
     this.strCoordsSet();
     this.id = generateRandomToken();
   }
 
-  public applyForce(force: ICoords) {
-    this.acc.add(force);
+  public netForce() {
+    let _f = new Vector();
+    this.forces.forEach((force) => {
+      _f.add(force.val);
+    });
+    this.applyForce(_f);
+  }
+
+  // TODO: a force if a vector that causes an object with mass to accelerate
+  // Net Force = Mass * Acceleration
+  public applyForce(force: Vector) {
+    // zero out acceleration between frames
+    this.acceleration.multiFlat(0);
+    // acceleration = net force / mass
+    force.divideFlat(this.mass);
+    this.acceleration.add(force.val);
+  }
+
+  public applyKinetics() {
+    // this.netForce();
+
+    // TL;DR Newtons three laws of Motion
+    // 1. an object at rest stays at rest and an object in motion stays in motion
+    this.velocity.add(this.acceleration.val);
+    this.velocity.limit(this.maxVelocity);
+    return this;
+  }
+
+  public blast(canvasContext: CanvasRenderingContext2D, canvasMeta: ICanvasMeta) {
+    // canvas coords are top-left origin of 0,0
+    // in a 100 x 100 screen going to the center
+    // is x: 50, y: 50
+    // which then an object at the bottom of the screen would need
+    // to move negative to move toward the top of the screen
+
+    this.prevCoords.update(this.coords.val);
+    this.applyKinetics();
+
+    // DIRECT
+    // this.coords.val.x += this.velocity.val.x;
+    // this.coords.val.y += this.velocity.val.y;
+
+    // ANGLED
+    // this.coords.val.x += (Math.cos(this.radians) * this.length) * this.velocity.val.x;
+    // this.coords.val.y += (Math.sin(this.radians) * this.length) * this.velocity.val.y;
+    let cos = Math.cos(this.radians) * 10;
+    let sin = Math.sin(this.radians) * 10;
+
+    this.coords.val.x += cos;
+    this.coords.val.y += sin;
+
+    // LEVERAGING HEADING BASED ON COORDS
+    // this.coords.val.x += (Math.cos(getDegrees(this.coords.heading())) * this.velocity.val.x);
+    // this.coords.val.y += (Math.sin(getDegrees(this.coords.heading())) * this.velocity.val.y);
+
+    // LEVERAGING HEADING BASED ON VELOCITY
+    // this.coords.val.x += (Math.cos(getDegrees(this.velocity.heading())) * this.velocity.val.x);
+    // this.coords.val.y += (Math.sin(getDegrees(this.velocity.heading())) * this.velocity.val.y);
+
+    // LEVERAGING ROTATE AND HEADING
+    // this.coords.rotate(getDegrees(this.velocity.heading()));
+
+    // TODO: THINK ABOUT POLAR COORDS VS CORTESIAN COORDS
+
     return this;
   }
 
@@ -70,79 +160,12 @@ export default class Rocket implements IRocketOptions {
     return this.prevCoords;
   }
 
-  // TODO
-  public blast(canvasContext: CanvasRenderingContext2D, canvasMeta: ICanvasMeta) {
-    this.prevCoords.val.x = this.coords.val.x;
-    this.prevCoords.val.y = this.coords.val.y;
-
-    // this.coords.val.x = this.coords.val.x - 1;
-    // this.coords.val.y = this.coords.val.y - 1;
-
-    // this.coords.val.x = this.coords.val.x - 1;
-    // this.coords.val.y = this.coords.val.y - 1;
-
-    this.coords.val.x += randomIntBetween(-1, 1);
-    this.coords.val.y += randomIntBetween(-1, 0);
-
-    // this.rotate(this.heading);
-    // this.gravity();
-    return this;
-  }
-
-  // this is the function to draw at an angle
-  // public drawRockets(ctx) {
-  //   var r = 20;
-  //   var degrees = 90;
-
-  //   rockets.forEach((rocket) => {
-  //     var {x,y,d} = rocket;
-
-  //     ctx.moveTo(x, y);
-  //     ctx.lineWidth = 3;
-  //     ctx.lineTo(x + r * Math.cos(Math.PI * d / 180.0), y + r * Math.sin(Math.PI * d / 180.0));
-  //     ctx.stroke();
-  //   });
-  // }
-
-  // TODO
-  // public rotate(degrees: number, coords: ICoords, width: number, heading?: number): ICoords {
-  //   let radians = getRadians(degrees);
-  //   let x2 = coords.x + width * Math.cos(radians);
-  //   let y2 = coords.y + width * Math.sin(radians);
-
-  //   // ctx.moveTo(x1, y1);
-  //   // ctx.lineTo(x2, y2);
-
-  //   return {
-  //     x: x2,
-  //     y: y2
-  //   };
-  // }
-
   public resetCoords(coords: ICoords) {
-    this.coords.val = coords;
-  }
-
-  public gravity() {
-    this.coords.val.x += this.velocity.val.x;
-    this.coords.val.y += this.velocity.val.y;
-    this.velocity.val.y *= .99;
-    this.velocity.val.y += .25;
-
-    // this.vel.add(this.acc.val);
-    // this.pos.add(this.vel.val);
-    // this.coords.add(this.vel.val);
-    // this.acc.scalar(0);
-    this.velocity.limit(this.maxVelocity);
-    // console.log('POSITION: ', this.pos.val);
-    // console.log('COORDS: ', this.coords.val);
-    // console.log('ACC: ', this.acc.val);
-    return this;
+    this.coords.update(coords);
+    this.radians = randomIntBetween(0, Math.PI * 2);
   }
 
   private strCoordsSet() {
-    // TODO prob can get rid of this method
-    // dont think its used anywhere
     this.strCoords = JSON.stringify(this.coords);
     return this;
   }

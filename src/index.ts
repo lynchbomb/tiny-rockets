@@ -1,8 +1,8 @@
 import Genetics from './genetics';
-import { ICanvasMeta } from './interfaces/i-canvas-meta';
+import ICanvasMeta from './interfaces/i-canvas-meta';
 import { IBoundary, ICoords } from './interfaces/i-coords';
-import { IGeneticsItem } from './interfaces/i-genetics';
-import { IRocketOptions } from './interfaces/i-rocket-options';
+import IGeneticsItem from './interfaces/i-genetics';
+import IRocketOptions from './interfaces/i-rocket-options';
 import Rocket from './rocket';
 import { getDistanceBetweenR2Vectors, getRadians, isOutOfBounds, randomIntBetween } from './utils';
 import Vector from './vector';
@@ -10,9 +10,10 @@ import Vector from './vector';
 class TinyRockets {
   public FPS_THROTTLE: null | number = null;
   public IS_PAUSED: boolean = false;
-  public rocketsCount: number = 10;
-  public rocketWidth: number = 2;
-  public rocketHeight: number = 6;
+  public rocketsCount: number = 20;
+  public rocketWidth: number = 1;
+  public rocketLength: number = 10;
+  public rocketHeight: number = 10;
   public rockets: Array<[Rocket]> | any = [];
   public genetics: Genetics;
 
@@ -60,9 +61,7 @@ class TinyRockets {
   public initRockets() {
     for (let i = 0; i < this.rocketsCount; i++) {
       this.rockets.push(new Rocket({
-        val: { x: randomIntBetween(0, this.canvasMeta.canvasScalarWidth), y: this.canvasMeta.canvasScalarHeight },
-        width: this.rocketWidth,
-        height: this.rocketHeight
+        coords: new Vector({ x: randomIntBetween(0, this.canvasMeta.canvasScalarWidth), y: this.canvasMeta.canvasScalarHeight })
       }));
     }
   }
@@ -110,15 +109,12 @@ class TinyRockets {
 
   public renderRocket(rocket: Rocket): Rocket {
     let { x, y } = rocket.coords.val;
-    let degrees = rocket.degrees;
-    let width = rocket.width;
-    let height = rocket.height;
+    // let width = rocket.width;
 
     this.canvasContext.beginPath();
     this.canvasContext.moveTo(rocket.prevCoords.val.x, rocket.prevCoords.val.y);
-    this.canvasContext.lineWidth = width;
-    // this.canvasContext.lineTo(x, y);
-    this.canvasContext.lineTo(x + height * Math.cos(getRadians(degrees)), y + height * Math.sin(getRadians(degrees)));
+    // this.canvasContext.lineWidth = width;
+    this.canvasContext.lineTo(x, y);
 
     this.canvasContext.stroke();
     this.canvasContext.closePath();

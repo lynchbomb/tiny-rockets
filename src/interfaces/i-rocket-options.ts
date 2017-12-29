@@ -1,13 +1,14 @@
-import { ICoords } from './i-coords';
-import { IVector } from './i-vector';
+import Vector from '../vector';
 
-export interface IRocketOptions {
+export default interface IRocketOptions {
   fillStyle?: string;
-  coords?: IVector;
-  prevCoords?: IVector;
+  coords: Vector;
+  prevCoords?: Vector;
   STRcoords?: string;
   width?: number;
   height?: number;
-  val?: ICoords;
   degrees?: number;
+  maxVelocity?: number;
+  mass?: number;
+  length?: number;
 };
