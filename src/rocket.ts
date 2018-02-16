@@ -41,6 +41,7 @@ export default class Rocket implements IRocketOptions {
   public cosX: number;
   public sinY: number;
 
+  public dnaCount: number;
   constructor(options: IRocketOptions) {
     this.height = options.height || 5;
     this.radians = randomIntBetween(0, Math.PI * 2);
@@ -63,7 +64,7 @@ export default class Rocket implements IRocketOptions {
     this.maxVelocity = options.maxVelocity || 1;
     this.velocity = new Vector();
     this.acceleration = new Vector();
-    this.acceleration.update({ x: 0.01, y: 0.01 });
+    this.acceleration.update({ x: 0.0005, y: 0.0005 });
     this.degrees = getDegrees(randomIntBetween(0, Math.PI * 2));
 
     // FORCES
@@ -71,10 +72,14 @@ export default class Rocket implements IRocketOptions {
     this.gravity = new Vector({x: 0, y: 0.3 * this.mass});
     this.friction = new Vector({x: 0.1, y: 0});
     this.wind = new Vector({x: 0.2, y: 0});
+    // TODO implement DNA Vector array as a map for each rocket comprised of a random +/- point with random cos/sin
+    this.DNA = new DNA();
+    this.dnaCount = 0;
     this.forces = [
       this.gravity,
       // this.friction,
       // this.wind
+      this.DNA.getVector(this.dnaCount)
     ];
 
     this.strCoordsSet();
@@ -125,6 +130,8 @@ export default class Rocket implements IRocketOptions {
     this.coords.val.x += (this.cosX * this.velocity.val.x);
     this.coords.val.y += (this.sinY * this.velocity.val.y);
 
+    // reset the acceleration
+    this.acceleration.multiFlat(0);
     // DIRECT
     // this.coords.val.x += this.velocity.val.x;
     // this.coords.val.y += this.velocity.val.y;

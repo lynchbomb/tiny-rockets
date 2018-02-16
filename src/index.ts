@@ -8,7 +8,7 @@ import { getDistanceBetweenR2Vectors, getRadians, isOutOfBounds, randomIntBetwee
 import Vector from './vector';
 
 class TinyRockets {
-  public FPS_THROTTLE: null | number = 5;
+  public FPS_THROTTLE: null | number = null;
   public IS_PAUSED: boolean = false;
   public rocketsCount: number = 20;
   public rocketWidth: number = 1;
