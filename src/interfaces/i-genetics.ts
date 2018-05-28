@@ -1,4 +1,6 @@
-import { ICoords } from './i-coords';
+import {
+  ICoords
+} from 'scalar-js';
 
 export default interface IGeneticsItem {
   score: number;

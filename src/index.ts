@@ -1,11 +1,17 @@
 import Genetics from './genetics';
 import ICanvasMeta from './interfaces/i-canvas-meta';
-import { IBoundary, ICoords } from './interfaces/i-coords';
 import IGeneticsItem from './interfaces/i-genetics';
 import IRocketOptions from './interfaces/i-rocket-options';
 import Rocket from './rocket';
-import { getDistanceBetweenR2Vectors, getRadians, isOutOfBounds, randomIntBetween } from './utils';
-import Vector from './vector';
+import {
+  Vector,
+  IBoundary,
+  ICoords,
+  getDistanceBetweenR2Vectors,
+  getRadians,
+  isOutOfBounds,
+  randomIntBetween
+} from 'scalar-js';
 
 class TinyRockets {
   public FPS_THROTTLE: null | number = null;

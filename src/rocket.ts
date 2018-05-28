@@ -1,8 +1,9 @@
 import ICanvasMeta from './interfaces/i-canvas-meta';
-import { ICoords } from './interfaces/i-coords';
 import IRocketOptions from './interfaces/i-rocket-options';
-import IVector from './interfaces/i-vector';
 import {
+  ICoords,
+  IVector,
+  Vector,
   createVectorR2,
   generateRandomToken,
   getDegrees,
@@ -11,8 +12,7 @@ import {
   getRadians,
   getUnitVectorR2,
   randomIntBetween
-} from './utils';
-import Vector from './vector';
+} from 'scalar-js';
 
 export default class Rocket implements IRocketOptions {
   public fillStyle: string;

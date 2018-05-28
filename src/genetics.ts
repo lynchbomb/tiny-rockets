@@ -1,6 +1,10 @@
-import { ICoords } from './interfaces/i-coords';
 import { IGeneticsItem } from './interfaces/i-genetics';
-import { createVectorR2, getDistanceBetweenR2Vectors, randomIntBetween } from './utils';
+import {
+  ICoords,
+  createVectorR2,
+  getDistanceBetweenR2Vectors,
+  randomIntBetween
+} from 'scalar-js';
 
 export default class Genetics {
   // confirm if this should be a generation of IGeneticsItem or a Rocket
