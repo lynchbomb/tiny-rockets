@@ -1,6 +1,8 @@
-import Vector from 'scalar-js';
+import {
+  Vector
+} from 'scalar-js';
 
-export default interface IRocketOptions {
+export interface IRocketOptions {
   fillStyle?: string;
   coords: Vector;
   prevCoords?: Vector;
@@ -10,4 +12,4 @@ export default interface IRocketOptions {
   degrees?: number;
   maxVelocity?: number;
   mass?: number;
-};
+}

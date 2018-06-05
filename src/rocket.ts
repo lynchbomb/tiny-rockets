@@ -1,17 +1,17 @@
-import ICanvasMeta from './interfaces/i-canvas-meta';
-import IRocketOptions from './interfaces/i-rocket-options';
+import { ICanvasMeta } from './interfaces/i-canvas-meta';
+import { IRocketOptions } from './interfaces/i-rocket-options';
 import {
   ICoords,
-  IVector,
   Vector,
-  createVectorR2,
   generateRandomToken,
   getDegrees,
   getHeadingDegrees,
   getHeadingRadians,
   getRadians,
-  getUnitVectorR2,
-  randomIntBetween
+  randomIntBetween,
+  netForce,
+  applyForce,
+  applyKinetics
 } from 'scalar-js';
 
 export default class Rocket implements IRocketOptions {
@@ -54,7 +54,7 @@ export default class Rocket implements IRocketOptions {
       let _cy = options.coords.val.y;
       this.prevCoords = new Vector({x: _cx, y: _cy});
       this.coords = new Vector({x: _cx + this.cosX, y: _cy + this.sinY});
-    }else {
+    } else {
       this.prevCoords = new Vector({x: this.coords.val.x, y: this.coords.val.y});
       this.coords = new Vector({x: this.prevCoords.val.x + this.cosX, y: this.prevCoords.val.y + this.sinY});
     }
@@ -73,45 +73,17 @@ export default class Rocket implements IRocketOptions {
     this.friction = new Vector({x: 0.1, y: 0});
     this.wind = new Vector({x: 0.2, y: 0});
     // TODO implement DNA Vector array as a map for each rocket comprised of a random +/- point with random cos/sin
-    this.DNA = new DNA();
-    this.dnaCount = 0;
+    // this.DNA = new DNA();
+    // this.dnaCount = 0;
     this.forces = [
       this.gravity,
       // this.friction,
       // this.wind
-      this.DNA.getVector(this.dnaCount)
+      // this.DNA.getVector(this.dnaCount)
     ];
 
     this.strCoordsSet();
     this.id = generateRandomToken();
-  }
-
-  public netForce() {
-    let _f = new Vector();
-    this.forces.forEach((force) => {
-      _f.add(force.val);
-    });
-    this.applyForce(_f);
-  }
-
-  // TODO: a force if a vector that causes an object with mass to accelerate
-  // Net Force = Mass * Acceleration
-  public applyForce(force: Vector) {
-    // zero out acceleration between frames
-    this.acceleration.multiFlat(0);
-    // acceleration = net force / mass
-    force.divideFlat(this.mass);
-    this.acceleration.add(force.val);
-  }
-
-  public applyKinetics() {
-    // this.netForce();
-
-    // TL;DR Newtons three laws of Motion
-    // 1. an object at rest stays at rest and an object in motion stays in motion
-    this.velocity.add(this.acceleration.val);
-    this.velocity.limit(this.maxVelocity);
-    return this;
   }
 
   public blast(canvasContext: CanvasRenderingContext2D, canvasMeta: ICanvasMeta) {
@@ -122,7 +94,7 @@ export default class Rocket implements IRocketOptions {
     // to move negative to move toward the top of the screen
 
     this.prevCoords.update(this.coords.val);
-    this.applyKinetics();
+    applyKinetics(this.mass, this.acceleration, this.forces, this.velocity, this.maxVelocity);
     // TODO: issue with mult velocity will gradually increase the
     // height of the rocket over time until the maxVelocity ceil
     this.prevCoords.add(this.velocity.val);
@@ -131,7 +103,7 @@ export default class Rocket implements IRocketOptions {
     this.coords.val.y += (this.sinY * this.velocity.val.y);
 
     // reset the acceleration
-    this.acceleration.multiFlat(0);
+    this.acceleration.multi(0);
     // DIRECT
     // this.coords.val.x += this.velocity.val.x;
     // this.coords.val.y += this.velocity.val.y;
@@ -177,4 +149,4 @@ export default class Rocket implements IRocketOptions {
     this.strCoords = JSON.stringify(this.coords);
     return this;
   }
-};
+}

@@ -1,13 +1,12 @@
 import Genetics from './genetics';
-import ICanvasMeta from './interfaces/i-canvas-meta';
-import IGeneticsItem from './interfaces/i-genetics';
-import IRocketOptions from './interfaces/i-rocket-options';
 import Rocket from './rocket';
+import { ICanvasMeta } from './interfaces/i-canvas-meta';
+import { IGeneticsItem } from './interfaces/i-genetics';
+import { IRocketOptions } from './interfaces/i-rocket-options';
 import {
   Vector,
   IBoundary,
   ICoords,
-  getDistanceBetweenR2Vectors,
   getRadians,
   isOutOfBounds,
   randomIntBetween
@@ -98,7 +97,7 @@ class TinyRockets {
       setTimeout(() => {
         window.requestAnimationFrame(this.update.bind(this));
       }, 1000 / this.FPS_THROTTLE);
-    }else {
+    } else {
       window.requestAnimationFrame(this.update.bind(this));
     }
   }
@@ -150,4 +149,4 @@ class TinyRockets {
 
     return true;
   }
-};
+}

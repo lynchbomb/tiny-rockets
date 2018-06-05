@@ -2,8 +2,8 @@ import {
   ICoords
 } from 'scalar-js';
 
-export default interface IGeneticsItem {
+export interface IGeneticsItem {
   score: number;
   coords: ICoords;
   probability: number;
-};
+}

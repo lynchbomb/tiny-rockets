@@ -1,7 +1,6 @@
 import { IGeneticsItem } from './interfaces/i-genetics';
 import {
   ICoords,
-  createVectorR2,
   getDistanceBetweenR2Vectors,
   randomIntBetween
 } from 'scalar-js';
@@ -45,4 +44,4 @@ export default class Genetics {
 
     return prob;
   }
-};
+}
