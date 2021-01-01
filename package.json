@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "broccoli-string-replace": "^0.1.2",
-    "ember-cli": "^3.1.4",
+    "ember-cli": "^3.23.0",
     "scalar-js": "^0.0.14",
     "tslint": "^5.10.0",
     "typescript": "~2.9.1",
